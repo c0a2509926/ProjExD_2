@@ -13,7 +13,6 @@ DELTA = {
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-
 def chek_bound(rect: pg.Rect) -> tuple[bool,bool]:
     """
     引数 : こうかとんまたは爆弾のRect
@@ -29,26 +28,35 @@ def chek_bound(rect: pg.Rect) -> tuple[bool,bool]:
 
 
 def gameover(screen: pg.Surface) -> None:
-    go_black_img = pg.Surface((1100, 650))
-    go_black_img.set_alpha(200)
+    """
+    引数 : screen
+    戻り値 : None
+    爆番にぶつかったら黒い背景にgameoverの文字とこうかとんが5秒映る
+    """
+    go_black_img = pg.Surface((1100, 650))  # 黒い画面のSufaceを作る
+    go_black_img.set_alpha(200)             # 透明度を変える 
 
-    fonto = pg.font.Font(None,80)
-    txt = fonto.render("GameOver",True,(255,255,255))
-    go_black_img.blit(txt,[400,300])
+    fonto = pg.font.Font(None,80)           # 文字のSufaceを作る
+    txt = fonto.render("GameOver",True,(255,255,255))  # 文字を決める
+    go_black_img.blit(txt,[400,300])        # 黒い画面に張り付ける 
 
-    kk8_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
-    go_black_img.blit(kk8_img,[350,300])
-    go_black_img.blit(kk8_img,[700,300])
+    kk8_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)  # 画像をロード
+    go_black_img.blit(kk8_img,[350,300])    # 黒い画面に張り付ける 
+    go_black_img.blit(kk8_img,[700,300])    # 黒い画面に張り付ける
     
-    screen.blit(go_black_img,[0,0])
-    pg.display.update()
-    time.sleep(5)
+    screen.blit(go_black_img,[0,0])         # 本体画面に黒い画面を張り付ける
+    pg.display.update()                     # 関数を呼び出す
+    time.sleep(5)                           # 5秒後に消す
 
 
 
-
-    
-
+def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
+    for r in range(1,11):
+        bb_imgs = pg.Surface((20*r,20*r))
+        pg.draw.circle(bb_imgs,(255,0,0),(10*r,10*r),10*r)
+        bb_imgs.append(bb_imgs)
+    bb_accs = [a for a in range(1,11)]
+    return bb_imgs,bb_accs
 
 
 
@@ -69,6 +77,12 @@ def main():
     clock = pg.time.Clock()
     tmr = 0
     vx,vy = +5,+5
+
+    
+    
+    bb_imgs, bb_accs = init_bb_imgs()
+    
+
 
     while True:
         for event in pg.event.get():
@@ -95,8 +109,15 @@ def main():
                 sum_mv[0] += tpl[0]  # 横
                 sum_mv[1] += tpl[1]  # 縦
 
+        avx= vx*bb_accs[min//500,9]
+        avy = vy*bb_accs[min//500,9]
+        bb_img = bb_imgs[min(tmr//500,9)]
+        bb_rct.width = bb_img.get_rect().width
+
+
+
         kk_rct.move_ip(sum_mv)
-        bb_rct.move_ip(vx,vy) # 練習
+        bb_rct.move_ip(avx,avy) # 練習
         if chek_bound(kk_rct) != (True,True):  # どこかしらはみ出ている
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])  # 一こ前に戻す 
         screen.blit(kk_img, kk_rct)
