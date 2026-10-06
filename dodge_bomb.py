@@ -2,7 +2,7 @@ import os
 import random
 import sys
 import pygame as pg
-
+import time
 
 WIDTH, HEIGHT = 1100, 650
 DELTA = {
@@ -26,6 +26,29 @@ def chek_bound(rect: pg.Rect) -> tuple[bool,bool]:
     if rect.top < 0 or HEIGHT < rect.bottom:  # 縦判定
         tate = False    
     return yoko, tate 
+
+
+def gameover(screen: pg.Surface) -> None:
+    go_black_img = pg.Surface((1100, 650))
+    go_black_img.set_alpha(200)
+
+    fonto = pg.font.Font(None,80)
+    txt = fonto.render("GameOver",True,(255,255,255))
+    go_black_img.blit(txt,[400,300])
+
+    kk8_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
+    go_black_img.blit(kk8_img,[350,300])
+    go_black_img.blit(kk8_img,[700,300])
+    
+    screen.blit(go_black_img,[0,0])
+    pg.display.update()
+    time.sleep(5)
+
+
+
+
+    
+
 
 
 
@@ -54,7 +77,7 @@ def main():
         screen.blit(bg_img, [0, 0]) 
 
         if kk_rct.colliderect(bb_rct):
-            print("game over")
+            gameover(screen)
             return
 
         key_lst = pg.key.get_pressed()
