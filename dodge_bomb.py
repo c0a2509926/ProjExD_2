@@ -13,6 +13,7 @@ DELTA = {
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+
 def chek_bound(rect: pg.Rect) -> tuple[bool,bool]:
     """
     引数 : こうかとんまたは爆弾のRect
@@ -49,14 +50,15 @@ def gameover(screen: pg.Surface) -> None:
     time.sleep(5)                           # 5秒後に消す
 
 
-
 def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
     bb_imgs = []
     for r in range(1,11):
-        bb_imgs = pg.Surface((20*r,20*r))
-        pg.draw.circle(bb_imgs,(255,0,0),(10*r,10*r),10*r)
-        bb_img.append(bb_imgs)
+        bb_img = pg.Surface((20*r,20*r))
+        pg.draw.circle(bb_img,(255,0,0),(10*r,10*r),10*r)
+        bb_img.set_colorkey((0, 0, 0))
+        bb_imgs.append(bb_img)
     bb_accs = [a for a in range(1,11)]
+    
     return bb_imgs,bb_accs
 
 
@@ -110,8 +112,8 @@ def main():
                 sum_mv[0] += tpl[0]  # 横
                 sum_mv[1] += tpl[1]  # 縦
 
-        avx= vx*bb_accs[min//500,9]
-        avy = vy*bb_accs[min//500,9]
+        avx= vx*bb_accs[min(tmr//500,9)]
+        avy = vy*bb_accs[min(tmr//500,9)]
         bb_img = bb_imgs[min(tmr//500,9)]
         bb_rct.width = bb_img.get_rect().width
 
