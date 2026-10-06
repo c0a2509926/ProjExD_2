@@ -14,6 +14,22 @@ DELTA = {
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
+def chek_bound(rect: pg.Rect) -> tuple[bool,bool]:
+    """
+    引数 : こうかとんまたは爆弾のRect
+    戻り値 : タプル (横方向判定結果、縦方向判定結果)
+    画面内ならTrue/画面外ならFalse
+    """
+    yoko,tate = True,True
+    if rect.left < 0 or WIDTH < rect.right:  # 横判定
+        yoko = False
+    if rect.top < 0 or HEIGHT < rect.bottom:  # 縦判定
+        tate = False    
+    return yoko, tate 
+
+
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -37,6 +53,10 @@ def main():
                 return
         screen.blit(bg_img, [0, 0]) 
 
+        if kk_rct.colliderect(bb_rct):
+            print("game over")
+            return
+
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         # if key_lst[pg.K_UP]:
@@ -54,7 +74,16 @@ def main():
 
         kk_rct.move_ip(sum_mv)
         bb_rct.move_ip(vx,vy) # 練習
+        if chek_bound(kk_rct) != (True,True):  # どこかしらはみ出ている
+            kk_rct.move_ip(-sum_mv[0],-sum_mv[1])  # 一こ前に戻す 
         screen.blit(kk_img, kk_rct)
+
+        yoko, tate = chek_bound(bb_rct)
+        if not yoko:
+            vx *= -1
+        if not tate:
+            vy *= -1
+        
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
